@@ -1,4 +1,4 @@
-export const allTypeOfTags: Array<string> = [
+export const allTypeOfTags = [
   'Technologies',
   'Health and Fitness',
   'Travelling',
@@ -6,4 +6,6 @@ export const allTypeOfTags: Array<string> = [
   'Culture',
   'Personal growth',
   'Science'
-]
+] as const 
+
+export type Tag =  typeof allTypeOfTags [number]

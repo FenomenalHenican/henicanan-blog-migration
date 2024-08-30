@@ -38,3 +38,55 @@ const recomendationTags = ref(allTypeOfTags)
     </div>
   </div>
 </template>
+
+<style scoped>
+.input-topic-search {
+  padding-left: 10px;
+  height: 30px;
+  margin-top: 30vh;
+  border: 2px solid rgb(178, 178, 178);
+}
+
+.wrapper-recent-topic {
+  margin-top: 20px;
+}
+
+.recent-title {
+  margin-left: 5px;
+  font-weight: 400;
+  font-size: 20px;
+}
+
+.recent-topic {
+  border-top: 2px solid rgb(178, 178, 178);
+  margin-top: 10px;
+}
+
+.recommended-topic {
+  margin-top: 20px;
+  font-weight: 500;
+  font-size: 20px;
+}
+
+.tag-group {
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 9px;
+  border-top: 2px solid rgb(178, 178, 178);
+  padding-top: 20px;
+}
+
+.tag {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  font-size: 12px;
+  padding: 0 8px;
+  width: 100%;
+  text-align: center;
+  white-space: nowrap;
+  font-family: Arial, Helvetica, sans-serif;
+}
+</style>
