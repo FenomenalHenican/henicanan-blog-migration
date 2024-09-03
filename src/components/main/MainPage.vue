@@ -22,7 +22,7 @@ provide('isActive', isActive)
 
 watchEffect(() => {
   if (!route.name) {
-    navigateTo('listTopic')
+    navigateTo('listtopic')
   }
 })
 </script>

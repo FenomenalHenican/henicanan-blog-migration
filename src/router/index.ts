@@ -10,7 +10,7 @@ export const router = createRouter({
       children: [
         {
           path: '',
-          redirect: { name: 'listTopic' }
+          redirect: { name: 'listtopic' }
         },
         {
           path: '/list-topic',

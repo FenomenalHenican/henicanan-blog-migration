@@ -22,7 +22,7 @@ const isActive = inject<(section: string) => boolean>('isActive')
     <li :class="{ active: isActive && isActive('favoritetopics') }">
       <i class="pi pi-bookmark" @click="navigateTo && navigateTo('favoritetopics')" />
     </li>
-    <li :class="{ active: isActive && isActive('listopic') }">
+    <li :class="{ active: isActive && isActive('listtopic') }">
       <i class="pi pi-receipt" @click="navigateTo && navigateTo('listtopic')" />
     </li>
     <li :class="{ active: isActive && isActive('usersettings') }">

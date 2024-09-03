@@ -1,12 +1,9 @@
 import { db } from '@/modules/firebase/firebase'
 import { doc, setDoc, getDoc } from 'firebase/firestore'
-import { IUserData } from '@/types/UserData'
+import type { UserData } from '../../types/UserData'
+import { removeEmptyFields } from '../firebase/utils/removeEmptyFields'
 
-const removeEmptyFields = (obj: Record<string, any>): Record<string, any> => {
-  return Object.fromEntries(Object.entries(obj).filter(([_, v]) => v != null && v !== ''))
-}
-
-export const saveUserData = async (userId: string, userData: IUserData): Promise<void> => {
+export const saveUserData = async (userId: string, userData: UserData): Promise<void> => {
   try {
     const cleanedUserData = removeEmptyFields(userData)
     const userRef = doc(db, 'users', userId)
@@ -17,13 +14,13 @@ export const saveUserData = async (userId: string, userData: IUserData): Promise
   }
 }
 
-export const getUserData = async (userId: string): Promise<IUserData | null> => {
+export const getUserData = async (userId: string): Promise<UserData | null> => {
   try {
     const userRef = doc(db, 'users', userId)
     const userSnap = await getDoc(userRef)
 
     if (userSnap.exists()) {
-      return userSnap.data() as IUserData
+      return userSnap.data() as UserData
     } else {
       return null
     }
