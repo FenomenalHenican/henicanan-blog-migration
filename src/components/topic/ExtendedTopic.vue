@@ -1,11 +1,10 @@
-<script lang="ts">
+<script setup lang="ts">
 import Avatar from 'primevue/avatar'
 import Tag from 'primevue/tag'
 
 import anonim from '@/assets/img/anonim.jpg'
 
 import { defineProps, ref, onMounted, computed } from 'vue'
-
 </script>
 
 <template>

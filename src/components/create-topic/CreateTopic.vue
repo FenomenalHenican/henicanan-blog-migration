@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import Dialog from 'primevue/dialog'
 import InputText from 'primevue/inputtext'
 import Textarea from 'primevue/textarea'
@@ -6,8 +6,10 @@ import Button from 'primevue/button'
 import Toast from 'primevue/toast'
 import Tag from 'primevue/tag'
 
-import { setTopic } from '../../firebase/firestoreService'
-import { getUserIdFromLocalStorage } from '../../store/getLocalStorage'
+import { setTopic } from '../../services/firebase/topicDataService'
+import { getUserIdFromLocalStorage } from '../../local-storage/getUserId'
+import { allTypeOfTags } from '@/constants/allTypeOfTags'
+import type { TopicData } from '../../types/TopicData'
 
 import { defineProps, defineEmits, ref } from 'vue'
 import { useToast } from 'primevue/usetoast'
@@ -41,15 +43,7 @@ const emit = defineEmits(['update:visible'])
 const inputHeader = ref('')
 const inputTextArea = ref('')
 
-const availableTags = ref([
-  'Technologies',
-  'Health and Fitness',
-  'Travelling',
-  'Finance',
-  'Culture',
-  'Personal growth',
-  'Science'
-])
+const availableTags = ref(allTypeOfTags)
 
 const selectedTags = ref([])
 
@@ -57,15 +51,7 @@ const clearFields = () => {
   inputHeader.value = ''
   inputTextArea.value = ''
   selectedTags.value = []
-  availableTags.value = [
-    'Technologies',
-    'Health and Fitness',
-    'Travelling',
-    'Finance',
-    'Culture',
-    'Personal growth',
-    'Science'
-  ]
+  availableTags.value = allTypeOfTags
 }
 
 const closeDialog = () => {
@@ -88,7 +74,7 @@ const removeTag = (tag) => {
 
 const saveTopic = async () => {
   const userId = getUserIdFromLocalStorage()
-  const topicData = {
+  const topicData: TopicData = {
     header: inputHeader.value,
     discription: inputTextArea.value,
     userId: userId,

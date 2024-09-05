@@ -10,3 +10,7 @@ export interface UserData {
   userId?: string
   workPlace?: string
 }
+
+export interface UserWithId {
+  id: string
+}
