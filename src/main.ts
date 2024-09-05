@@ -10,11 +10,15 @@ import ToastService from 'primevue/toastservice'
 
 import App from './App.vue'
 import { router } from './router'
+import { setupAuthStateListener } from '@/store/authStateListener'
 
 const app = createApp(App)
 const pinia = createPinia()
 
 app.use(pinia)
+
+setupAuthStateListener()
+
 app.use(router)
 app.use(ToastService)
 app.use(PrimeVue, {
