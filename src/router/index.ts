@@ -21,7 +21,7 @@ export const router = createRouter({
             {
               path: '/create-topic',
               name: 'createtopic',
-              component: () => import('../components/modal/ModalAuth.vue')
+              component: () => import('../components/modal/modal-auth/ModalAuth.vue')
             }
           ]
         },

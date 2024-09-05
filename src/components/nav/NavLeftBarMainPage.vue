@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 
+import ModalAuth from '../modal/modal-auth/ModalAuth.vue'
+
 const navigateTo = inject<(section: string) => void>('navigateTo')
 const isActive = inject<(section: string) => boolean>('isActive')
 </script>
@@ -29,7 +31,7 @@ const isActive = inject<(section: string) => boolean>('isActive')
       <i class="pi pi-user-edit" @click="navigateTo && navigateTo('usersettings')" />
     </li>
     <li><div class="underline-left-nav" /></li>
-    <li class="button-login">Login modal</li>
+    <li class="button-login"><ModalAuth /></li>
   </ul>
 </template>
 
