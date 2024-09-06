@@ -6,6 +6,6 @@ export const allTypeOfTags = [
   'Culture',
   'Personal growth',
   'Science'
-] as const 
+] as const
 
-export type Tag =  typeof allTypeOfTags [number]
+export type Tag = (typeof allTypeOfTags)[number]

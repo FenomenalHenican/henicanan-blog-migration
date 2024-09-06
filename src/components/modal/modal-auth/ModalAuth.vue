@@ -62,8 +62,8 @@ const user = computed(() => userStore.user)
     <div class="button-auth" v-if="!user">
       <i class="pi pi-sign-in" @click="toggleLoginModal = true" />
     </div>
-    <div class="button-logout" v-else>
-      <Button @click="handleSignOut"> <i class="pi pi-times" /></Button>
+    <div v-else>
+      <button class="btn-logout" @click="handleSignOut"><i class="pi pi-times" /></button>
     </div>
     <Dialog
       v-model:visible="toggleLoginModal"
@@ -208,10 +208,18 @@ const user = computed(() => userStore.user)
   padding-top: 3px;
   padding-bottom: 3px;
   margin-bottom: 20px;
+  border: 2px solid #09a65c;
 }
 
-.button-logout {
-  font-size: 22px;
-  font-weight: 500;
+.btn-logout {
+  background: none;
+  border: none;
+  font-size: 35px;
+  margin-top: 0;
+}
+
+.btn-logout:hover {
+  background-color: rgb(199, 199, 199);
+  border-radius: 5px;
 }
 </style>

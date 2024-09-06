@@ -12,6 +12,7 @@ import {
 import type { TopicData, TopicWithId } from '../../types/TopicData'
 import { getUserIdFromLocalStorage } from '../../local-storage/getUserId'
 import { removeEmptyFields } from './utils/removeEmptyFields'
+import { showMessageAddTopic } from '@/services/toasts/message/toastAnnountationTopic'
 
 const setTopic = async (topicData: TopicData): Promise<void> => {
   try {
@@ -86,4 +87,43 @@ const fetchFavoriteTopics = async () => {
   }
 }
 
-export { fetchFavoriteTopics, removeTopicFromFavorites, addTopicToFavorite, getAllTopics, setTopic }
+const saveTopic = async (
+  inputHeader: string,
+  inputTextArea: string,
+  selectedTags: string,
+  clearFields: () => void,
+  closeDialog: () => void
+) => {
+  const userId = getUserIdFromLocalStorage()
+
+  if (userId === null) {
+    console.log('UserId is null')
+    return
+  }
+
+  const topicData: TopicData = {
+    header: inputHeader,
+    discription: inputTextArea,
+    userId: userId,
+    createdAt: new Date(),
+    tags: selectedTags
+  }
+  try {
+    await setTopic(topicData)
+    console.log('topicData', topicData)
+    clearFields()
+    closeDialog()
+    showMessageAddTopic()
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+export {
+  fetchFavoriteTopics,
+  removeTopicFromFavorites,
+  addTopicToFavorite,
+  getAllTopics,
+  setTopic,
+  saveTopic
+}

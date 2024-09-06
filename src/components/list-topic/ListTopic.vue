@@ -10,26 +10,16 @@ import Topic from '../topic/ExtendedTopic.vue'
 import { ref, onMounted } from 'vue'
 import { getAllTopics } from '../../services/firebase/topicDataService'
 import { useUserStore } from '@/store/auth'
-import { useToast } from 'primevue/usetoast'
+import { showErrorAddTopic } from '@/services/toasts/errors/toastErrorAddTopic'
 import type { TopicData, TopicWithId } from '@/types/TopicData'
 
 const userStore = useUserStore()
-const toast = useToast()
 
 const valueOfNavCatalog = ref<string>('Recommended')
 const optionsNavCatalog = ref<string[]>(['Following', 'Recommended'])
 const isVisibleTopic = ref<boolean>(false)
 
 const topics = ref<TopicWithId[]>([])
-
-const showErrorAddTopic = () => {
-  toast.add({
-    severity: 'error',
-    summary: 'Message',
-    detail: "You're not authorized",
-    life: 3000
-  })
-}
 
 const toggleVisibleTopic = () => {
   isVisibleTopic.value = !isVisibleTopic.value
@@ -59,7 +49,7 @@ onMounted(() => {
         rounded
         aria-label="Bookmark"
         class="btn-add-topic"
-        @click="tooggleVisibleTopic"
+        @click="toggleVisibleTopic"
       />
       <span class="add-topic-title">Click to create a discussion topic</span>
     </div>

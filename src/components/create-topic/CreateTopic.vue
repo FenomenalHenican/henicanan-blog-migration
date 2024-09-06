@@ -5,34 +5,12 @@ import Textarea from 'primevue/textarea'
 import Button from 'primevue/button'
 import Toast from 'primevue/toast'
 import Tag from 'primevue/tag'
+import { allTypeOfTags, type Tag as Tags } from '@/constants/allTypeOfTags'
+import { showErrorAddTag } from '@/services/toasts/errors/toastErrorAddTag'
+import { clearFields } from '@/services/firebase/utils/clearFields'
 
-import { setTopic } from '../../services/firebase/topicDataService'
-import { getUserIdFromLocalStorage } from '../../local-storage/getUserId'
-import { allTypeOfTags } from '@/constants/allTypeOfTags'
-import type { TopicData } from '../../types/TopicData'
-
-import { defineProps, defineEmits, ref } from 'vue'
-import { useToast } from 'primevue/usetoast'
-
-const toast = useToast()
-
-const showAnnountationTopic = () => {
-  toast.add({
-    severity: 'info',
-    summary: 'Message',
-    detail: 'Your topic is added',
-    life: 3000
-  })
-}
-
-const showErrorAddTag = () => {
-  toast.add({
-    severity: 'error',
-    summary: 'Error message',
-    detail: 'You can add a maximum of 3 tags',
-    life: 3000
-  })
-}
+import { defineProps, defineEmits, ref, watch } from 'vue'
+import { saveTopic } from '@/services/firebase/topicDataService'
 
 const props = defineProps({
   visible: Boolean
@@ -40,25 +18,27 @@ const props = defineProps({
 
 const emit = defineEmits(['update:visible'])
 
+const localVisible = ref(props.visible)
+
+watch(
+  () => props.visible,
+  (newValue) => {
+    localVisible.value = newValue
+  }
+)
+
 const inputHeader = ref('')
 const inputTextArea = ref('')
 
-const availableTags = ref(allTypeOfTags)
+const availableTags = ref([...allTypeOfTags])
 
-const selectedTags = ref([])
-
-const clearFields = () => {
-  inputHeader.value = ''
-  inputTextArea.value = ''
-  selectedTags.value = []
-  availableTags.value = allTypeOfTags
-}
+const selectedTags = ref<string[]>([])
 
 const closeDialog = () => {
   emit('update:visible', false)
 }
 
-const selectTag = (tag) => {
+const selectTag = (tag: Tags) => {
   if (selectedTags.value.length < 3) {
     selectedTags.value.push(tag)
     availableTags.value = availableTags.value.filter((t) => t !== tag)
@@ -67,35 +47,19 @@ const selectTag = (tag) => {
   }
 }
 
-const removeTag = (tag) => {
+const removeTag = (tag: Tags) => {
   selectedTags.value = selectedTags.value.filter((t) => t !== tag)
   availableTags.value.push(tag)
 }
 
-const saveTopic = async () => {
-  const userId = getUserIdFromLocalStorage()
-  const topicData: TopicData = {
-    header: inputHeader.value,
-    discription: inputTextArea.value,
-    userId: userId,
-    createdAt: new Date(),
-    tags: selectedTags.value
-  }
-  try {
-    await setTopic(topicData)
-    console.log('topicData', topicData)
-    clearFields()
-    closeDialog()
-    showAnnountationTopic()
-  } catch (err) {
-    console.log(err)
-  }
+const handleSaveTopic = () => {
+  saveTopic(inputHeader.value, inputTextArea.value, selectedTags.value, clearFields, closeDialog)
 }
 </script>
 
 <template>
   <Dialog
-    v-model:visible="props.visible"
+    v-model:visible="localVisible"
     maximizable
     modal
     header="Create Topic"

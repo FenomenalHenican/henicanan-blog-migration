@@ -1,7 +1,7 @@
 export interface TopicData {
   header: string
   discription: string
-  userId: number
+  userId: string | null
   createdAt: Date
   tags: string[]
 }
