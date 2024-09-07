@@ -1,10 +1,133 @@
 <script setup lang="ts">
-import Avatar from 'primevue/avatar'
 import Tag from 'primevue/tag'
 
 import anonim from '@/assets/img/anonim.jpg'
 
 import { defineProps, ref, onMounted, computed } from 'vue'
+import { getUserIdFromLocalStorage } from '@/local-storage/getUserId'
+import { removeTopicFromFavorites, addTopicToFavorite } from '@/services/firebase/topicDataService'
+import type { TopicWithId } from '@/types/TopicData'
+import { getUserData } from '@/services/firebase/userDataService'
+import { Timestamp } from 'firebase/firestore'
+
+const props = defineProps<{
+  topic: TopicWithId
+}>()
+
+const userFirstName = ref<string>('')
+const userSecondName = ref<string>('')
+const formattedCreationDate = ref<string>('')
+const readingTime = ref<string>('')
+const isFavorite = ref<boolean>(false)
+const avatarLink = ref<string>('')
+
+const fetchUserName = async () => {
+  try {
+    const userId = props.topic.userId
+    if (userId) {
+      const userData = await getUserData(userId)
+      if (userData) {
+        userFirstName.value = userData.firstName || 'Anonymus'
+        userSecondName.value = userData.secondName || ''
+        avatarLink.value = userData.avatarUrl || ''
+      } else {
+        userFirstName.value = 'Anonymus'
+      }
+    } else {
+      userFirstName.value = 'Anonymus'
+    }
+  } catch (err) {
+    console.log(err)
+    userFirstName.value = 'Anonymus'
+  }
+}
+
+const formattedDate = (timestamp: Timestamp): string => {
+  const date = timestamp.toDate()
+  const today = new Date()
+  const oneDay = 24 * 60 * 60 * 1000
+  const diffDays = Math.round((today.getTime() - date.getTime()) / oneDay)
+
+  switch (true) {
+    case diffDays === 0:
+      return 'Today'
+    case diffDays === 1:
+      return 'Yesterday'
+    case diffDays === 2:
+      return 'the day before yesterday'
+    case diffDays < 30:
+      return `${diffDays} days ago`
+    default: {
+      const months = Math.floor(diffDays / 30)
+      if (months <= 11) {
+        return `${months} months ago`
+      } else {
+        return '1 year ago'
+      }
+    }
+  }
+}
+
+const calculateTimeOfRead = (discription: string): string => {
+  const wordsPerMinute = 120
+  const numberOfWords = discription.trim().split(/\s+/).length
+  const minutes = numberOfWords / wordsPerMinute
+  if (minutes < 1) {
+    return 'less than a minute read'
+  } else if (minutes < 2) {
+    return '1 minute read'
+  } else {
+    return `${Math.ceil(minutes)} minutes read`
+  }
+}
+
+const truncatedDescription = computed(() => {
+  const lines: string[] = props.topic.discription.split('\n')
+  if (lines.length > 3) {
+    const truncatedLines = lines.splice(0, 3)
+    const lastLineWords = truncatedLines[2].split(' ')
+    lastLineWords[lastLineWords.length - 1] = '...'
+    truncatedLines[2] = lastLineWords.join(' ')
+    return truncatedLines.join('\n')
+  }
+  console.log(props.topic.discription)
+  return props.topic.discription
+})
+
+const toggleFavorite = async (topic: TopicWithId) => {
+  try {
+    const userId = getUserIdFromLocalStorage()
+
+    if (!userId) {
+      console.log('User Id is not found')
+      return
+    }
+
+    if (isFavorite.value) {
+      const result = await removeTopicFromFavorites(userId, topic.id)
+      if (result) {
+        isFavorite.value = false
+      }
+    } else {
+      const result = await addTopicToFavorite(userId, topic.id)
+      if (result) {
+        isFavorite.value = true
+      }
+    }
+  } catch (err) {
+    console.log(err)
+  }
+}
+
+onMounted(() => {
+  fetchUserName()
+  if (props.topic.createdAt instanceof Timestamp) {
+    formattedCreationDate.value = formattedDate(props.topic.createdAt)
+  } else {
+    console.log('Invalid timestamp')
+  }
+  readingTime.value = calculateTimeOfRead(props.topic.discription)
+})
 </script>
 
 <template>
@@ -12,7 +135,7 @@ import { defineProps, ref, onMounted, computed } from 'vue'
     <div class="header-card">
       <img :src="avatarLink || anonim" alt="User Avatar" class="avatar" />
       <div class="username">{{ userFirstName + ' ' + userSecondName }}</div>
-      <div class="date-post">{{ formattedDate }}</div>
+      <div class="date-post">{{ formattedCreationDate }}</div>
     </div>
     <span class="title-card">{{ topic.header }}</span>
     <span class="description-card">{{ truncatedDescription }}</span>
@@ -27,7 +150,7 @@ import { defineProps, ref, onMounted, computed } from 'vue'
           <li>
             <i
               :class="['pi', isFavorite ? 'pi-bookmark-fill' : 'pi-bookmark']"
-              @click="toggleFavorite(topic)"
+              @click="() => toggleFavorite(topic)"
             />
           </li>
           <li class="options"><i class="pi pi-ellipsis-h" /></li>
@@ -149,6 +272,7 @@ import { defineProps, ref, onMounted, computed } from 'vue'
   margin-right: 10px;
   font-family: Arial, Helvetica, sans-serif;
   padding: 5px;
+  white-space: nowrap;
 }
 
 .reading-time {
@@ -160,8 +284,8 @@ import { defineProps, ref, onMounted, computed } from 'vue'
 
 .recomendation {
   margin-left: 10px;
-  color: rgb(116, 115, 115);
-  font-size: 16px;
+  color: rgb(130, 127, 127);
+  font-size: 18px;
   font-weight: 350;
 }
 

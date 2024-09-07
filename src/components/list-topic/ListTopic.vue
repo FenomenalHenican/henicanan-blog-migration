@@ -4,14 +4,14 @@ import Message from 'primevue/message'
 import SelectButton from 'primevue/selectbutton'
 import Toast from 'primevue/toast'
 
-import CreateTopic from '../create-topic/CreateTopic.vue'
+import CreateTopic from '@/components/modal/create-topic/CreateTopic.vue'
 import Topic from '../topic/ExtendedTopic.vue'
 
 import { ref } from 'vue'
 import { getAllTopics } from '../../services/firebase/topicDataService'
 import { useUserStore } from '@/store/auth'
 import { showErrorAddTopic } from '@/services/toasts/errors/toastErrorAddTopic'
-import type { TopicData, TopicWithId } from '@/types/TopicData'
+import type { TopicWithId } from '@/types/TopicData'
 
 const userStore = useUserStore()
 
@@ -23,18 +23,13 @@ const topics = ref<TopicWithId[]>([])
 const fetchTopicData = async () => {
   try {
     const topicData = await getAllTopics()
-    console.log(topicData)
     topics.value = topicData as TopicWithId[]
-    console.log(topics.value)
   } catch (err) {
     console.error('Failed to fetch topics:', err)
   }
 }
 
 fetchTopicData()
-// onMounted(async () => {
-//   await fetchTopicData()
-// })
 </script>
 
 <template>
