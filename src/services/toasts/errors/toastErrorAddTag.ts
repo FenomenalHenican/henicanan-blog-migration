@@ -1,7 +1,6 @@
-import { useToast } from 'primevue/usetoast'
+import type { ToastServiceMethods } from 'primevue/toastservice'
 
-export const showErrorAddTag = () => {
-  const toast = useToast()
+export const showErrorAddTag = (toast: ToastServiceMethods) => {
   toast.add({
     severity: 'error',
     summary: 'Error message',

@@ -7,9 +7,12 @@ import Toast from 'primevue/toast'
 import Tag from 'primevue/tag'
 import { allTypeOfTags, type Tag as Tags } from '@/constants/allTypeOfTags'
 import { showErrorAddTag } from '@/services/toasts/errors/toastErrorAddTag'
-
-import { ref } from 'vue'
+import { showMessageAddTopic } from '@/services/toasts/message/toastAnnountationTopic'
 import { saveTopic } from '@/services/firebase/topicDataService'
+import { ref } from 'vue'
+import { useToast } from 'primevue/usetoast'
+
+const toast = useToast()
 
 const visible = ref(false)
 const inputHeader = ref('')
@@ -35,7 +38,7 @@ const selectTag = (tag: Tags) => {
     selectedTags.value.push(tag)
     availableTags.value = availableTags.value.filter((t) => t !== tag)
   } else {
-    showErrorAddTag()
+    showErrorAddTag(toast)
   }
 }
 
@@ -47,6 +50,7 @@ const removeTag = (tag: Tags) => {
 const handleSaveTopic = async () => {
   try {
     await saveTopic(inputHeader.value, inputTextArea.value, selectedTags.value)
+    showMessageAddTopic(toast)
   } catch (err) {
     console.log(err)
   } finally {

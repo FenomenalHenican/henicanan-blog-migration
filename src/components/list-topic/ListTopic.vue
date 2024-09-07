@@ -5,20 +5,32 @@ import SelectButton from 'primevue/selectbutton'
 import Toast from 'primevue/toast'
 
 import CreateTopic from '@/components/modal/create-topic/CreateTopic.vue'
-import Topic from '../topic/ExtendedTopic.vue'
+import ExtendedTopic from '../topic/ExtendedTopic.vue'
 
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { getAllTopics } from '../../services/firebase/topicDataService'
 import { useUserStore } from '@/store/auth'
+import { getUserData } from '@/services/firebase/userDataService'
 import { showErrorAddTopic } from '@/services/toasts/errors/toastErrorAddTopic'
 import type { TopicWithId } from '@/types/TopicData'
+import { useToast } from 'primevue/usetoast'
+import { getUserIdFromLocalStorage } from '@/local-storage/getUserId'
 
 const userStore = useUserStore()
+const toast = useToast()
 
 const valueOfNavCatalog = ref<string>('Recommended')
 const optionsNavCatalog = ref<string[]>(['Following', 'Recommended'])
 
 const topics = ref<TopicWithId[]>([])
+
+const favoriteStatuses = ref<{ [key: string]: boolean }>({})
+
+const fetchFavoriteStatuses = async () => {
+  for (const topic of topics.value) {
+    favoriteStatuses.value[topic.id] = await isFavoriteTopic(topic.id)
+  }
+}
 
 const fetchTopicData = async () => {
   try {
@@ -29,7 +41,22 @@ const fetchTopicData = async () => {
   }
 }
 
-fetchTopicData()
+const isFavoriteTopic = async (topicId: string) => {
+  const userId = getUserIdFromLocalStorage()
+  if (!userId) {
+    return false
+  }
+  const userData = await getUserData(userId)
+  if (!userData || !userData.favoriteTopics) {
+    return false
+  }
+  return userData.favoriteTopics.includes(topicId)
+}
+
+onMounted(async () => {
+  await fetchTopicData()
+  await fetchFavoriteStatuses()
+})
 </script>
 
 <template>
@@ -45,7 +72,7 @@ fetchTopicData()
         rounded
         aria-label="Bookmark"
         class="btn-blocked-add-topic"
-        @click="showErrorAddTopic"
+        @click="showErrorAddTopic(toast)"
       />
       <Toast />
       <span class="add-topic-title">You are not logged in, please log in to create a topic.</span>
@@ -60,7 +87,12 @@ fetchTopicData()
     <SelectButton v-model="valueOfNavCatalog" :options="optionsNavCatalog" />
   </div>
   <div class="topic-list-recomendation" v-if="valueOfNavCatalog === 'Recommended'">
-    <Topic v-for="topic in topics" :key="topic.id" :topic="topic" />
+    <ExtendedTopic
+      v-for="topic in topics"
+      :key="topic.id"
+      :isFavoriteDefault="favoriteStatuses[topic.id] || false"
+      :topic="topic"
+    />
   </div>
   <div class="topic-list-following" v-else>
     <div class="message-absent-topic">

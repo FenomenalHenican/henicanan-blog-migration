@@ -3,7 +3,7 @@ import Tag from 'primevue/tag'
 
 import anonim from '@/assets/img/anonim.jpg'
 
-import { defineProps, ref, onMounted, computed } from 'vue'
+import { defineProps, ref, onMounted, computed, watch } from 'vue'
 import { getUserIdFromLocalStorage } from '@/local-storage/getUserId'
 import { removeTopicFromFavorites, addTopicToFavorite } from '@/services/firebase/topicDataService'
 import type { TopicWithId } from '@/types/TopicData'
@@ -12,13 +12,14 @@ import { Timestamp } from 'firebase/firestore'
 
 const props = defineProps<{
   topic: TopicWithId
+  isFavoriteDefault: boolean
 }>()
 
 const userFirstName = ref<string>('')
 const userSecondName = ref<string>('')
 const formattedCreationDate = ref<string>('')
 const readingTime = ref<string>('')
-const isFavorite = ref<boolean>(false)
+const isFavorite = ref<boolean>(props.isFavoriteDefault)
 const avatarLink = ref<string>('')
 
 const fetchUserName = async () => {
@@ -26,6 +27,7 @@ const fetchUserName = async () => {
     const userId = props.topic.userId
     if (userId) {
       const userData = await getUserData(userId)
+      console.log(userData)
       if (userData) {
         userFirstName.value = userData.firstName || 'Anonymus'
         userSecondName.value = userData.secondName || ''
@@ -97,12 +99,10 @@ const truncatedDescription = computed(() => {
 const toggleFavorite = async (topic: TopicWithId) => {
   try {
     const userId = getUserIdFromLocalStorage()
-
     if (!userId) {
       console.log('User Id is not found')
       return
     }
-
     if (isFavorite.value) {
       const result = await removeTopicFromFavorites(userId, topic.id)
       if (result) {
@@ -118,6 +118,13 @@ const toggleFavorite = async (topic: TopicWithId) => {
     console.log(err)
   }
 }
+
+watch(
+  () => props.isFavoriteDefault,
+  (newVal) => {
+    isFavorite.value = newVal
+  }
+)
 
 onMounted(() => {
   fetchUserName()

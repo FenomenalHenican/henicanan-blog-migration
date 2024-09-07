@@ -1,7 +1,6 @@
-import { useToast } from 'primevue/usetoast'
+import type { ToastServiceMethods } from 'primevue/toastservice'
 
-export const showMessageAddTopic = () => {
-  const toast = useToast()
+export const showMessageAddTopic = (toast: ToastServiceMethods) => {
   toast.add({
     severity: 'info',
     summary: 'Message',
