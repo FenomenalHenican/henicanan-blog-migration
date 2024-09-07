@@ -7,35 +7,27 @@ import Toast from 'primevue/toast'
 import Tag from 'primevue/tag'
 import { allTypeOfTags, type Tag as Tags } from '@/constants/allTypeOfTags'
 import { showErrorAddTag } from '@/services/toasts/errors/toastErrorAddTag'
-import { clearFields } from '@/services/firebase/utils/clearFields'
 
-import { defineProps, defineEmits, ref, watch } from 'vue'
+import { ref } from 'vue'
 import { saveTopic } from '@/services/firebase/topicDataService'
 
-const props = defineProps({
-  visible: Boolean
-})
-
-const emit = defineEmits(['update:visible'])
-
-const localVisible = ref(props.visible)
-
-watch(
-  () => props.visible,
-  (newValue) => {
-    localVisible.value = newValue
-  }
-)
-
+const visible = ref(false)
 const inputHeader = ref('')
 const inputTextArea = ref('')
 
 const availableTags = ref([...allTypeOfTags])
 
-const selectedTags = ref<string[]>([])
+const selectedTags = ref<Tags[]>([])
 
 const closeDialog = () => {
-  emit('update:visible', false)
+  clearFields()
+  visible.value = false
+}
+
+const clearFields = () => {
+  inputHeader.value = ''
+  inputTextArea.value = ''
+  availableTags.value = [...allTypeOfTags]
 }
 
 const selectTag = (tag: Tags) => {
@@ -52,21 +44,33 @@ const removeTag = (tag: Tags) => {
   availableTags.value.push(tag)
 }
 
-const handleSaveTopic = () => {
-  saveTopic(inputHeader.value, inputTextArea.value, selectedTags.value, clearFields, closeDialog)
+const handleSaveTopic = async () => {
+  try {
+    await saveTopic(inputHeader.value, inputTextArea.value, selectedTags.value)
+  } catch (err) {
+    console.log(err)
+  } finally {
+    closeDialog()
+  }
 }
 </script>
 
 <template>
+  <Button
+    icon="pi pi-plus"
+    severity="secondary"
+    rounded
+    aria-label="Bookmark"
+    class="btn-add-topic"
+    @click="visible = true"
+  />
   <Dialog
-    v-model:visible="localVisible"
+    v-model:visible="visible"
     maximizable
     modal
     header="Create Topic"
     :style="{ width: '50rem' }"
     :breakpoints="{ '1199px': '75vw', '575px': '90vw' }"
-    @hide="closeDialog"
-    @update:visible="(val) => emit('update:visible', val)"
     ><div class="header-name">
       <span class="header-title">Enter title your topic</span>
       <InputText class="input-header" v-model="inputHeader" />
@@ -103,7 +107,7 @@ const handleSaveTopic = () => {
         </div>
       </div>
     </div>
-    <Button class="btn-save-topic" label="Save Topic" @click="saveTopic" />
+    <Button class="btn-save-topic" label="Save Topic" @click="handleSaveTopic" />
   </Dialog>
   <Toast />
 </template>

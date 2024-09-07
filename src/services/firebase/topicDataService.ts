@@ -87,13 +87,7 @@ const fetchFavoriteTopics = async () => {
   }
 }
 
-const saveTopic = async (
-  inputHeader: string,
-  inputTextArea: string,
-  selectedTags: string,
-  clearFields: () => void,
-  closeDialog: () => void
-) => {
+const saveTopic = async (inputHeader: string, inputTextArea: string, selectedTags: string[]) => {
   const userId = getUserIdFromLocalStorage()
 
   if (userId === null) {
@@ -111,8 +105,6 @@ const saveTopic = async (
   try {
     await setTopic(topicData)
     console.log('topicData', topicData)
-    clearFields()
-    closeDialog()
     showMessageAddTopic()
   } catch (err) {
     console.log(err)

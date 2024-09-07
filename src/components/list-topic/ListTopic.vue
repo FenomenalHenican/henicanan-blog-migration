@@ -7,7 +7,7 @@ import Toast from 'primevue/toast'
 import CreateTopic from '../create-topic/CreateTopic.vue'
 import Topic from '../topic/ExtendedTopic.vue'
 
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { getAllTopics } from '../../services/firebase/topicDataService'
 import { useUserStore } from '@/store/auth'
 import { showErrorAddTopic } from '@/services/toasts/errors/toastErrorAddTopic'
@@ -17,17 +17,13 @@ const userStore = useUserStore()
 
 const valueOfNavCatalog = ref<string>('Recommended')
 const optionsNavCatalog = ref<string[]>(['Following', 'Recommended'])
-const isVisibleTopic = ref<boolean>(false)
 
 const topics = ref<TopicWithId[]>([])
-
-const toggleVisibleTopic = () => {
-  isVisibleTopic.value = !isVisibleTopic.value
-}
 
 const fetchTopicData = async () => {
   try {
     const topicData = await getAllTopics()
+    console.log(topicData)
     topics.value = topicData as TopicWithId[]
     console.log(topics.value)
   } catch (err) {
@@ -35,22 +31,16 @@ const fetchTopicData = async () => {
   }
 }
 
-onMounted(() => {
-  fetchTopicData()
-})
+fetchTopicData()
+// onMounted(async () => {
+//   await fetchTopicData()
+// })
 </script>
 
 <template>
   <div class="add-topic">
     <div class="wrapper-btn-add-topic" v-if="userStore.user">
-      <Button
-        icon="pi pi-plus"
-        severity="secondary"
-        rounded
-        aria-label="Bookmark"
-        class="btn-add-topic"
-        @click="toggleVisibleTopic"
-      />
+      <CreateTopic />
       <span class="add-topic-title">Click to create a discussion topic</span>
     </div>
     <div class="wrapper-btn-blocked-add-topic" v-else>
@@ -65,7 +55,6 @@ onMounted(() => {
       <Toast />
       <span class="add-topic-title">You are not logged in, please log in to create a topic.</span>
     </div>
-    <CreateTopic v-model:visible="isVisibleTopic" />
     <Message severity="secondary" class="add-topic-warning"
       >Click on the plus icon to create a discussion topic. After filling out the fields and sending
       them for moderation, you will receive a response in your personal account. Users will be able
