@@ -5,7 +5,10 @@ import anonim from '@/assets/img/anonim.jpg'
 
 import { defineProps, ref, onMounted, watch } from 'vue'
 import { getUserIdFromLocalStorage } from '@/local-storage/getUserId'
-import { removeTopicFromFavorites, addTopicToFavorite } from '@/services/firebase/topicDataService'
+import {
+  removeTopicFromFavorites,
+  addTopicToFavorite
+} from '@/services/firebase/favoriteTopicService'
 import type { TopicWithId } from '@/types/TopicData'
 import { getUserData } from '@/services/firebase/userDataService'
 import { Timestamp } from 'firebase/firestore'
