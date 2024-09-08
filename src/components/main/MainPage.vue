@@ -1,7 +1,6 @@
 <script setup lang="ts">
-import { watchEffect } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { provide } from 'vue'
+import { provide, onMounted } from 'vue'
 
 import NavLeftBarMainPage from '../nav/NavLeftBarMainPage.vue'
 import NavRigthBarMainPage from '../nav/NavRigthBarMainPage.vue'
@@ -20,8 +19,8 @@ const isActive = (section: string): boolean => {
 provide('navigateTo', navigateTo)
 provide('isActive', isActive)
 
-watchEffect(() => {
-  if (!route.name) {
+onMounted(() => {
+  if (!route.name || route.name === 'mainpage') {
     navigateTo('listtopic')
   }
 })

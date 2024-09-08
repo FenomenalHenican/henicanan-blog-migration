@@ -27,7 +27,6 @@ const fetchUserName = async () => {
     const userId = props.topic.userId
     if (userId) {
       const userData = await getUserData(userId)
-      console.log(userData)
       if (userData) {
         userFirstName.value = userData.firstName || 'Anonymus'
         userSecondName.value = userData.secondName || ''
@@ -86,7 +85,7 @@ const calculateTimeOfRead = (discription: string): string => {
 const truncatedDescription = computed(() => {
   const lines: string[] = props.topic.discription.split('\n')
   if (lines.length > 3) {
-    const truncatedLines = lines.splice(0, 3)
+    const truncatedLines = lines.slice(0, 3)
     const lastLineWords = truncatedLines[2].split(' ')
     lastLineWords[lastLineWords.length - 1] = '...'
     truncatedLines[2] = lastLineWords.join(' ')
@@ -100,7 +99,6 @@ const toggleFavorite = async (topic: TopicWithId) => {
   try {
     const userId = getUserIdFromLocalStorage()
     if (!userId) {
-      console.log('User Id is not found')
       return
     }
     if (isFavorite.value) {

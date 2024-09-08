@@ -113,6 +113,10 @@ const user = computed(() => userStore.user)
 </template>
 
 <style scoped>
+.button-auth:hover {
+  color: rgb(199, 199, 199);
+}
+
 .btn-login i {
   font-size: 22px;
   font-weight: 500;
