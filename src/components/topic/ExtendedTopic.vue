@@ -3,12 +3,16 @@ import Tag from 'primevue/tag'
 
 import anonim from '@/assets/img/anonim.jpg'
 
-import { defineProps, ref, onMounted, computed, watch } from 'vue'
+import { defineProps, ref, onMounted, watch } from 'vue'
 import { getUserIdFromLocalStorage } from '@/local-storage/getUserId'
 import { removeTopicFromFavorites, addTopicToFavorite } from '@/services/firebase/topicDataService'
 import type { TopicWithId } from '@/types/TopicData'
 import { getUserData } from '@/services/firebase/userDataService'
 import { Timestamp } from 'firebase/firestore'
+
+import { getTruncatedDescription } from '@/components/topic/utils/truncatedDescription'
+import { calculateTimeOfRead } from '@/components/topic/utils/calculateTimeOfRead'
+import { formattedDate } from '@/components/topic/utils/formattedDate'
 
 const props = defineProps<{
   topic: TopicWithId
@@ -42,58 +46,6 @@ const fetchUserName = async () => {
     userFirstName.value = 'Anonymus'
   }
 }
-
-const formattedDate = (timestamp: Timestamp): string => {
-  const date = timestamp.toDate()
-  const today = new Date()
-  const oneDay = 24 * 60 * 60 * 1000
-  const diffDays = Math.round((today.getTime() - date.getTime()) / oneDay)
-
-  switch (true) {
-    case diffDays === 0:
-      return 'Today'
-    case diffDays === 1:
-      return 'Yesterday'
-    case diffDays === 2:
-      return 'the day before yesterday'
-    case diffDays < 30:
-      return `${diffDays} days ago`
-    default: {
-      const months = Math.floor(diffDays / 30)
-      if (months <= 11) {
-        return `${months} months ago`
-      } else {
-        return '1 year ago'
-      }
-    }
-  }
-}
-
-const calculateTimeOfRead = (discription: string): string => {
-  const wordsPerMinute = 120
-  const numberOfWords = discription.trim().split(/\s+/).length
-  const minutes = numberOfWords / wordsPerMinute
-  if (minutes < 1) {
-    return 'less than a minute read'
-  } else if (minutes < 2) {
-    return '1 minute read'
-  } else {
-    return `${Math.ceil(minutes)} minutes read`
-  }
-}
-
-const truncatedDescription = computed(() => {
-  const lines: string[] = props.topic.discription.split('\n')
-  if (lines.length > 3) {
-    const truncatedLines = lines.slice(0, 3)
-    const lastLineWords = truncatedLines[2].split(' ')
-    lastLineWords[lastLineWords.length - 1] = '...'
-    truncatedLines[2] = lastLineWords.join(' ')
-    return truncatedLines.join('\n')
-  }
-  console.log(props.topic.discription)
-  return props.topic.discription
-})
 
 const toggleFavorite = async (topic: TopicWithId) => {
   try {
@@ -133,6 +85,8 @@ onMounted(() => {
   }
   readingTime.value = calculateTimeOfRead(props.topic.discription)
 })
+
+const truncatedDescription = getTruncatedDescription(props.topic.discription)
 </script>
 
 <template>

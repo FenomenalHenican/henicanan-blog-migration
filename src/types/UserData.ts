@@ -9,6 +9,7 @@ export interface UserData {
   telegram?: string
   userId?: string
   workPlace?: string
+  status?: string
 }
 
 export interface UserWithId {
