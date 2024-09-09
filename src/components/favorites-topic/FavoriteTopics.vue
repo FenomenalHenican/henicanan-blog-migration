@@ -3,7 +3,7 @@ import ExtendedTopic from '@/components/topic/ExtendedTopic.vue'
 import { doc, getDoc } from 'firebase/firestore'
 import { db } from '@/modules/firebase/firebase'
 import { ref, onMounted } from 'vue'
-import { fetchFavoriteTopics } from '@/services/firebase/topicDataService'
+import { fetchFavoriteTopics } from '@/services/firebase/favoriteTopicService'
 
 const favoriteTopics = ref([])
 

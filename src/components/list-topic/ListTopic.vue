@@ -8,36 +8,25 @@ import CreateTopic from '@/components/modal/create-topic/CreateTopic.vue'
 import ExtendedTopic from '../topic/ExtendedTopic.vue'
 
 import { onMounted, ref } from 'vue'
-import { getAllTopics } from '../../services/firebase/topicDataService'
 import { useUserStore } from '@/store/auth'
+import { useTopicStore } from '@/store/topic'
 import { getUserData } from '@/services/firebase/userDataService'
 import { showErrorAddTopic } from '@/services/toasts/errors/toastErrorAddTopic'
-import type { TopicWithId } from '@/types/TopicData'
 import { useToast } from 'primevue/usetoast'
 import { getUserIdFromLocalStorage } from '@/local-storage/getUserId'
 
+const topicStore = useTopicStore()
 const userStore = useUserStore()
 const toast = useToast()
 
 const valueOfNavCatalog = ref<string>('Recommended')
 const optionsNavCatalog = ref<string[]>(['Following', 'Recommended'])
 
-const topics = ref<TopicWithId[]>([])
-
 const favoriteStatuses = ref<{ [key: string]: boolean }>({})
 
 const fetchFavoriteStatuses = async () => {
-  for (const topic of topics.value) {
+  for (const topic of topicStore.topics) {
     favoriteStatuses.value[topic.id] = await isFavoriteTopic(topic.id)
-  }
-}
-
-const fetchTopicData = async () => {
-  try {
-    const topicData = await getAllTopics()
-    topics.value = topicData as TopicWithId[]
-  } catch (err) {
-    console.error('Failed to fetch topics:', err)
   }
 }
 
@@ -54,7 +43,7 @@ const isFavoriteTopic = async (topicId: string) => {
 }
 
 onMounted(async () => {
-  await fetchTopicData()
+  await topicStore.fetchTopics()
   await fetchFavoriteStatuses()
 })
 </script>
@@ -88,7 +77,7 @@ onMounted(async () => {
   </div>
   <div class="topic-list-recomendation" v-if="valueOfNavCatalog === 'Recommended'">
     <ExtendedTopic
-      v-for="topic in topics"
+      v-for="topic in topicStore.topics"
       :key="topic.id"
       :isFavoriteDefault="favoriteStatuses[topic.id] || false"
       :topic="topic"

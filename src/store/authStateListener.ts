@@ -11,7 +11,6 @@ export const setupAuthStateListener = () => {
   auth.onAuthStateChanged((user: User | null) => {
     if (user) {
       userStore.setUser(user)
-      console.log(user)
     } else {
       userStore.clearUser()
     }

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { useRoute, useRouter } from 'vue-router'
 import { provide, onMounted } from 'vue'
-
 import NavLeftBarMainPage from '../nav/NavLeftBarMainPage.vue'
 import NavRigthBarMainPage from '../nav/NavRigthBarMainPage.vue'
 
