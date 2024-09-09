@@ -40,7 +40,6 @@ const isActive = inject<(section: string) => boolean>('isActive')
   margin-left: 20px;
   list-style: none;
   padding-top: 25vh;
-  position: fixed;
 }
 
 .top-colomn-left-nav li {

@@ -38,7 +38,7 @@ export const router = createRouter({
         {
           path: '/favorite-topics',
           name: 'favoritetopics',
-          component: () => import('../components/favorites-topic/FavoriteTopics.vue')
+          component: () => import('../components/favorites-topic/ListFavoriteTopic.vue')
         },
         {
           path: '/notification',

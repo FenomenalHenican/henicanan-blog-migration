@@ -52,14 +52,17 @@ onMounted(() => {
 
 .left-nav {
   height: 100vh;
-  width: 14vh;
+  width: 10vh;
   border-right: 2px solid rgb(178, 178, 178);
+  position: fixed;
+  top: 0;
+  left: 0;
 }
 
 .content {
   margin-top: 20px;
-  margin-left: 10vh;
-  width: 200vh;
+  margin-left: 13vh;
+  width: 190vh;
 }
 
 .rigth-nav {
